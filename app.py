@@ -13,9 +13,11 @@ class PlaylistScrapper():
 		self.driver = webdriver.Firefox()
 		self.driver.get("http://radioluz.pwr.edu.pl/")
 		self.current_date = datetime.now().strftime('%d-%m-%Y')
+		self.main()
 
 
-	def getSongs(self):
+	# returns a list of 5 last played tracks on radio luz
+	def get_songs(self):
 		songs = []
 		path = "/html/body/div[2]/div/section[3]/div/ul/"
 
@@ -28,15 +30,25 @@ class PlaylistScrapper():
 		return songs
 
 
-	def main(self):
-		songs = self.getSongs()
-		with open(f'np_luz_{self.current_date}.txt', mode='a') as file:
-		    file.write("\n".join(item for item in songs))
-		    file.write("\n")
+	# returns a list of already saved songs
+	def get_saved(self):
+		with open(f'np_luz_{self.current_date}.txt', mode='r') as file:
+			return [line.strip("\n") for line in file.readlines()]
 
+
+	def write_songs_to_file(self, prev, songs):
+		with open(f'np_luz_{self.current_date}.txt', mode='a') as file:
+			for item in songs:
+				if item not in prev:
+					file.write(item+"\n")
+
+
+	def main(self):
+		songs = self.get_songs()
+		prev = self.get_saved()
+		self.write_songs_to_file(prev, songs)
 		self.driver.close()
 
 
 if __name__ == "__main__":
-	scrape = PlaylistScrapper()
-	scrape.main()
+	PlaylistScrapper()
