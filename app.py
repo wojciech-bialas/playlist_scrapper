@@ -32,9 +32,11 @@ class PlaylistScrapper():
 
 	# returns a list of already saved songs
 	def get_saved(self):
-		with open(f'np_luz_{self.current_date}.txt', mode='r') as file:
-			return [line.strip("\n") for line in file.readlines()]
-
+		try:
+			with open(f'np_luz_{self.current_date}.txt', mode='r') as file:
+				return [line.strip("\n") for line in file.readlines()]
+		except:
+			return []
 
 	def write_songs_to_file(self, prev, songs):
 		with open(f'np_luz_{self.current_date}.txt', mode='a') as file:
@@ -47,7 +49,7 @@ class PlaylistScrapper():
 		songs = self.get_songs()
 		prev = self.get_saved()
 		self.write_songs_to_file(prev, songs)
-		self.driver.close()
+		self.driver.quit()
 
 
 if __name__ == "__main__":
